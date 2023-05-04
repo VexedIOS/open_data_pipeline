@@ -1,6 +1,6 @@
-from src.open_data_pipeline.Foundation.default_pipeline.Isave import Isave
-from src.open_data_pipeline.Foundation.default_pipeline.Iproccess import ProcessPipeline
-from src.open_data_pipeline.Foundation.default_pipeline.Iimporter import IImporter
+from ez_data_pipeline.Foundation.default_pipeline.Isave import Isave
+from ez_data_pipeline.Foundation.default_pipeline.Iproccess import ProcessPipeline
+from ez_data_pipeline.Foundation.default_pipeline.Iimporter import IImporter
 
 
 # Any way to type-hint

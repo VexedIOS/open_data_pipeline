@@ -5,7 +5,7 @@ with open ("README.md", "r") as f:
 
 setup(
     name='ez_data_pipeline',
-    version='0.4',
+    version='0.6',
     package_dir={"": "src"},
     packages= find_packages(where="src"),
     url='https://github.com/VexedIOS/open_data_pipeline',

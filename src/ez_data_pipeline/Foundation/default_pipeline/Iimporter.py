@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from src.open_data_pipeline.Foundation import utils
+from ez_data_pipeline.Foundation import utils
 
 
 class IImporter(ABC):

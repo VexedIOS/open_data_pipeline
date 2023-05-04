@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod, ABCMeta
-from src.open_data_pipeline.Foundation.utils import ImportData
+from ez_data_pipeline.Foundation.utils import ImportData
 
 
 class Processor(ABC):

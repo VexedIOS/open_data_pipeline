@@ -1,5 +1,5 @@
-from src.open_data_pipeline.Foundation.default_pipeline.Imodel import Imodel
-from src.open_data_pipeline.Foundation.default_pipeline.IproccessMethod import ProcessingMethod
+from ez_data_pipeline.Foundation.default_pipeline.Imodel import Imodel
+from ez_data_pipeline.Foundation.default_pipeline.IproccessMethod import ProcessingMethod
 
 
 class ModelPipeline:

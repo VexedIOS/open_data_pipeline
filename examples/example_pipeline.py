@@ -1,12 +1,12 @@
 import pandas as pd
 import yfinance
-from open_data_pipeline.Foundation.default_pipeline.Iimporter import IImporter
-from open_data_pipeline.Foundation.default_pipeline.Imodel import Imodel
-from open_data_pipeline.Foundation.default_pipeline.Ipipeline import ModelPipeline
-from open_data_pipeline.Foundation.default_pipeline.Iproccess import ProcessPipeline, Processor
-from open_data_pipeline.Foundation.default_pipeline.IproccessMethod import ProcessingMethod
-from open_data_pipeline.Foundation.default_pipeline.Isave import Isave
-from open_data_pipeline.Foundation.utils import ImportData, AssetClass
+from ez_data_pipeline.Foundation.default_pipeline.Iimporter import IImporter
+from ez_data_pipeline.Foundation.default_pipeline.Imodel import Imodel
+from ez_data_pipeline.Foundation.default_pipeline.Ipipeline import ModelPipeline
+from ez_data_pipeline.Foundation.default_pipeline.Iproccess import ProcessPipeline, Processor
+from ez_data_pipeline.Foundation.default_pipeline.IproccessMethod import ProcessingMethod
+from ez_data_pipeline.Foundation.default_pipeline.Isave import Isave
+from ez_data_pipeline.Foundation.utils import ImportData, AssetClass
 
 
 # Creating import method

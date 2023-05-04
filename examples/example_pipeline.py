@@ -36,7 +36,7 @@ class yf_Import(IImporter):
 
 
 # Define the process pipeline
-class ImplementedPipeline(ProcessPipeline):
+class ProcessPipeline(ProcessPipeline):
     # Add processor to list
     class AddProcessor(Processor):
         def process(self, import_data: ImportData) -> ImportData:
@@ -62,12 +62,13 @@ class CSVSave(Isave):
 
 
 class LinearModel(Imodel):
-
+    """Write you cool Model here"""
     def run_model(self) -> pd.DataFrame:
+        """Run your cool Model here"""
         return self.processed_data
 
 
-pm = ProcessingMethod(yf_Import, ImplementedPipeline, CSVSave, "SPY")
+pm = ProcessingMethod(yf_Import, ProcessPipeline, CSVSave, "SPY")
 
 test_pipeline = ModelPipeline(data_model=LinearModel, data_processing=pm)
 test_pipeline.run_pipeline()

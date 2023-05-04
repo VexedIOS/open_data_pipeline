@@ -1,26 +1,182 @@
 
 # Open Data Pipeline
 
-Library meant to improve collaboration and automatically get all necessary libraries and other tools to speed up development. Any architechture changes will occur here. Pycharm seems to be the default IDE.  
-
+Object-oriented  library to quickly deploy and test data pipelines and models 
 # Installing Library 
-`pip install .`
-
-# Installation Necessary Project Libraries
-`pip install -r requirements.txt`
-
-# Setting up environment 
-This can be taken care by pycharm, but for testing the CI/CD you may want to use VIM<br><br>
-[Venv Setup](https://virtualenv.pypa.io/en/latest/installation.html)<br>
-`... Docker will be added when a good workflow is developed`
+`pip install ez-data-pipeline`
 
 # General Contribution Guidelines 
 
 Create a feature branch, try to merge by end of day in order to avoid conflict.
 Every major commit will have associated test cases so make sure you use TDD.
-You can ask to get invited to the private repository. The private repo will have more advanced ML based models.
 
-# In the works 
- Since this is to facilitate deployment/integration add issues as you see fit. Docker Images will be the next step to 
- automate deployment
- 
+# Building first pipeline
+
+### Required Imports
+```
+import pandas as pd
+import yfinance
+from open_data_pipeline.Foundation.default_pipeline.Iimporter import IImporter
+from open_data_pipeline.Foundation.default_pipeline.Imodel import Imodel
+from open_data_pipeline.Foundation.default_pipeline.Ipipeline import ModelPipeline
+from open_data_pipeline.Foundation.default_pipeline.Iproccess import ProcessPipeline, Processor
+from open_data_pipeline.Foundation.default_pipeline.IproccessMethod import ProcessingMethod
+from open_data_pipeline.Foundation.default_pipeline.Isave import Isave
+from open_data_pipeline.Foundation.utils import ImportData, AssetClass 
+```
+###  Creating Importing class 
+```
+class yf_Import(IImporter):
+
+    def __init__(self, ticker: str):
+        self.ticker = ticker
+        self.data_ticker = yfinance.Ticker(self.ticker)
+        self.data = self.data_ticker.history("max")
+
+    def _import(self) -> pd.DataFrame:
+        return self.data
+
+    def find_asset_class(self) -> str:
+        return self.data_ticker.info['quoteType']
+
+    def return_data(self) -> ImportData:
+        data_dict = {"EQUITY": AssetClass.Stock, "ETF": AssetClass.ETF}
+        yf_asset_type = self.find_asset_class()
+        return ImportData(self._import(), data_dict[yf_asset_type])
+
+    def __str__(self):
+        return f"TICKER: {str(self.data)}"
+
+    def __repr__(self):
+        return f"yf_Import({self.ticker})"
+```
+### Process Pipeline
+```
+class ProcessPipeline(ProcessPipeline):
+    # Add processor to list
+    class AddProcessor(Processor):
+        def process(self, import_data: ImportData) -> ImportData:
+            import_data.pd_data = import_data.pd_data + 1
+            return import_data
+
+    # Add processor to list
+    class RemoveRowProcessor(Processor):
+        def process(self, import_data: ImportData) -> ImportData:
+            import_data.pd_data = import_data.pd_data.drop("High", axis=1)
+            return import_data
+
+    class MakeRandomOperation(Processor):
+        def process(self, import_data: ImportData) -> ImportData:
+            import_data.pd_data = import_data.pd_data + 2
+            return import_data
+
+```
+### Creating Saving Class
+```
+class CSVSave(Isave):
+    def save(self):
+        print("saved")
+        
+```
+### Creating Process Method
+This method is meant to isolate the pre-processing section of model development to easily test it for a production enviroment
+```
+pm = ProcessingMethod(yf_Import, ProcessPipeline, CSVSave, "SPY")
+```
+### Creating Model 
+```
+class LinearModel(Imodel):
+    """Write you cool Model here"""
+    def run_model(self) -> pd.DataFrame:
+        """Run your cool Model here"""
+        return self.processed_data
+```
+### Creating Full Pipeline
+
+```
+test_pipeline = ModelPipeline(data_model=LinearModel, data_processing=pm)
+test_pipeline.run_pipeline()
+
+print(test_pipeline.result)
+```
+
+# Full Example
+```
+import pandas as pd
+import yfinance
+from open_data_pipeline.Foundation.default_pipeline.Iimporter import IImporter
+from open_data_pipeline.Foundation.default_pipeline.Imodel import Imodel
+from open_data_pipeline.Foundation.default_pipeline.Ipipeline import ModelPipeline
+from open_data_pipeline.Foundation.default_pipeline.Iproccess import ProcessPipeline, Processor
+from open_data_pipeline.Foundation.default_pipeline.IproccessMethod import ProcessingMethod
+from open_data_pipeline.Foundation.default_pipeline.Isave import Isave
+from open_data_pipeline.Foundation.utils import ImportData, AssetClass
+
+
+# Creating import method
+class yf_Import(IImporter):
+
+    def __init__(self, ticker: str):
+        self.ticker = ticker
+        self.data_ticker = yfinance.Ticker(self.ticker)
+        self.data = self.data_ticker.history("max")
+
+    def _import(self) -> pd.DataFrame:
+        return self.data
+
+    def find_asset_class(self) -> str:
+        return self.data_ticker.info['quoteType']
+
+    def return_data(self) -> ImportData:
+        data_dict = {"EQUITY": AssetClass.Stock, "ETF": AssetClass.ETF}
+        yf_asset_type = self.find_asset_class()
+        return ImportData(self._import(), data_dict[yf_asset_type])
+
+    def __str__(self):
+        return f"TICKER: {str(self.data)}"
+
+    def __repr__(self):
+        return f"yf_Import({self.ticker})"
+
+
+# Define the process pipeline
+class ProcessPipeline(ProcessPipeline):
+    # Add processor to list
+    class AddProcessor(Processor):
+        def process(self, import_data: ImportData) -> ImportData:
+            import_data.pd_data = import_data.pd_data + 1
+            return import_data
+
+    # Add processor to list
+    class RemoveRowProcessor(Processor):
+        def process(self, import_data: ImportData) -> ImportData:
+            import_data.pd_data = import_data.pd_data.drop("High", axis=1)
+            return import_data
+
+    class MakeRandomOperation(Processor):
+        def process(self, import_data: ImportData) -> ImportData:
+            import_data.pd_data = import_data.pd_data + 2
+            return import_data
+
+
+# Define Save class
+class CSVSave(Isave):
+    def save(self):
+        print("saved")
+
+
+class LinearModel(Imodel):
+    """Write you cool Model here"""
+    def run_model(self) -> pd.DataFrame:
+        """Run your cool Model here"""
+        return self.processed_data
+
+
+pm = ProcessingMethod(yf_Import, ProcessPipeline, CSVSave, "SPY")
+
+test_pipeline = ModelPipeline(data_model=LinearModel, data_processing=pm)
+test_pipeline.run_pipeline()
+
+print(test_pipeline.result)
+
+```

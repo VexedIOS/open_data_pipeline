@@ -4,7 +4,7 @@ with open ("README.md", "r") as f:
     long_description = f.read()
 
 setup(
-    name='open_data_pipeline',
+    name='ez_data_pipeline',
     version='0.4',
     package_dir={"": "src"},
     packages= find_packages(where="src"),
@@ -25,6 +25,6 @@ setup(
     extras_require={
         "dev": ["pytest>=7.0", "twine>=4.0.2", "yfinance>=0.2.18"],
     },
-    python_requires=">=3.10",
+    python_requires=">=3.8",
 )
 
